@@ -1,10 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
+import axios from 'axios'
 import Quagga from "quagga";
 import { Button,Box } from "@mui/material";
+import { use } from "react";
 
 const BarScanner = ({ page, setPage }) => {
   const [barcode, setBarcode] = useState(null);
   const videoRef = useRef(null);
+
+  
+
+    // try {
+    //   const result=axios.post('localhost:8080/api/attendence/ingoing', {empId:barcode});
+    //   console.log(result.data.message);
+    // } catch (error) {
+    //   console.log("error occur in sending")
+    // }
+
+
+ 
+
+
 
   useEffect(() => {
     Quagga.init(
@@ -48,7 +64,7 @@ const BarScanner = ({ page, setPage }) => {
       alignItems: "center",
       justifyContent: "center",
       height: "100vh",
-      width:"90dvw",
+      width:"100dvw",
       textAlign: "center",
       padding:0,
       margin:0
@@ -66,11 +82,11 @@ const BarScanner = ({ page, setPage }) => {
           backgroundColor: "black" // Added for better visibility
         }}></div>
       </div>
-      {barcode && <p>Scanned Code: {barcode}</p>}
+      {barcode &&  <p>Scanned Code: {barcode}</p>}
     
 
     <div>
-    <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}>
+    <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2, }}>
         <Button variant="contained" color="primary" onClick={() => setPage("sendout")}>
         Send Out
         </Button>

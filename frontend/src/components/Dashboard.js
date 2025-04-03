@@ -4,6 +4,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
   Paper, Typography, Container 
 } from "@mui/material";
+import Header from "../pages/Header";
 
 const Dashboard = () => {
   const [workers, setWorkers] = useState([]);
@@ -23,7 +24,8 @@ const Dashboard = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 5 }}>
-      <Typography variant="h4" align="center" gutterBottom>
+      <Header />
+      <Typography variant="h4" align="center" gutterBottom sx={{marginBottom:"40px"}}>
         Worker Dashboard
       </Typography>
       <TableContainer component={Paper} elevation={3}>

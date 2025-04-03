@@ -1,14 +1,14 @@
-const mailTemplate = (email)=>
+const mailTemplate = (email,empId)=>
     {
         return` <div style="max-width: 600px; margin: auto; padding: 20px; 
             font-family: Arial, sans-serif; text-align: center; 
             border: 2px solid #007BFF; border-radius: 10px; background-color: #f9f9f9;">
             <h2 style="color: #007BFF;">Welcome to Byte Stack!</h2>
             <p style="color: #333; font-size: 16px;">
-                Hi, <b>${email}</b>! Your account has been successfully created.  
+                Hi, <b>${email}</b>! Your account has been successfully created and your Id is ${empId}  
                 We are excited to have you on board. Click the button below to get started.
             </p>
-            <a href="https://bytestack.com/login" 
+            <a href="http://localhost:8080/login" 
                 style="display: inline-block; padding: 12px 24px; font-size: 16px; 
                         color: #ffffff; background-color: #007BFF; text-decoration: none; 
                         border-radius: 5px; font-weight: bold; margin-top: 15px;">

@@ -1,102 +1,135 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  TextField,
-  Typography,
-  Paper,
-} from "@mui/material";
+import rbg from "../assets/registerbg.jpg";
+import aixos from 'axios'
+import axios from "axios";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const navigate = useNavigate();
 
-  // Function to generate a random User ID
   const generateUserId = () => {
     return "USER" + Math.floor(1000 + Math.random() * 9000);
   };
 
-  const handleRegister = (e) => {
-    e.preventDefault();
-    const userId = generateUserId();
-    alert(`Registration successful!\nYour User ID: ${userId}`);
+  const handleRegister = async(e) => {
+    
+    try {
+      e.preventDefault();
+      axios.default.withCredentials=true;
 
-    localStorage.setItem(
-      "user",
-      JSON.stringify({ userId, name, email, password })
-    );
+      const user={
+        name:name,
+        email:email,
+        password:password
+      }
 
-    // navigate("/login");
+      console.log(user);
+      const result=await axios.post('http://localhost:8080//api/authemp/register',
+        user,{withCredentials:true}
+      )
+      console.log(result.data);
+
+    } catch (error) {
+      console.log("error in registration");
+    }
+    
   };
 
   return (
-    <Container maxWidth="xs">
-      <Paper
-        elevation={3}
-        sx={{
-          padding: 4,
-          marginTop: 10,
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+        backgroundImage: `url(${rbg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div
+        style={{
+          background: "rgba(255, 255, 255, 0.9)",
+          padding: "30px",
+          borderRadius: "8px",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+          width: "380px",
           textAlign: "center",
-          borderRadius: 2,
         }}
       >
-        <Typography variant="h5" component="h2" gutterBottom>
+        <h2 style={{ marginBottom: "20px", fontSize: "24px", color: "#333" }}>
           Register
-        </Typography>
-        <Box component="form" onSubmit={handleRegister} sx={{ mt: 2 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Enter Name"
-                variant="outlined"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Enter Email"
-                type="email"
-                variant="outlined"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Enter Password"
-                type="password"
-                variant="outlined"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                fullWidth
-                type="submit"
-                variant="contained"
-                color="primary"
-                sx={{ padding: "10px", fontSize: "16px" }}
-              >
-                Submit
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </Paper>
-    </Container>
+        </h2>
+        <form onSubmit={handleRegister}>
+          <input
+            type="text"
+            placeholder="Enter Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            style={{
+              width: "100%",
+              padding: "12px",
+              margin: "10px 0",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              fontSize: "16px",
+            }}
+          />
+          <input
+            type="email"
+            placeholder="Enter Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            style={{
+              width: "100%",
+              padding: "12px",
+              margin: "10px 0",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              fontSize: "16px",
+            }}
+          />
+          <input
+            type="password"
+            placeholder="Enter Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            style={{
+              width: "100%",
+              padding: "12px",
+              margin: "10px 0",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              fontSize: "16px",
+            }}
+          />
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              padding: "12px",
+              background: "#007bff",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+              fontSize: "18px",
+              cursor: "pointer",
+              transition: "0.3s",
+            }}
+            onMouseOver={(e) => (e.target.style.background = "#0056b3")}
+            onMouseOut={(e) => (e.target.style.background = "#007bff")}
+          >
+            Submit
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 

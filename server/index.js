@@ -1,45 +1,37 @@
-import express from "express";
-import mongoose from "mongoose";
-import cors from "cors";
-import dotenv from "dotenv";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import cookieParser from "cookie-parser";
-import bodyParser from "body-parser";
+import express from 'express'
+import dotenv from 'dotenv'
+import mongodb from '../yash/industry/server/db.js'
+import cors from 'cors';
 
-dotenv.config(); 
-
-const app = express();
+import employeerouter from './routers/employeerouter.js'
+import cookieParser from 'cookie-parser'
+import attendencerouter from './routers/attendencerouter.js';
+import adminrouter from './routers/adminrouter.js';
 
 
-app.use(cors());
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+const app=express()
+dotenv.config()
+
+app.use(cors(
+    {
+        origin: "http://localhost:3000", // Allow frontend
+        credentials: true, // Allow cookies
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        allowedHeaders: ["Content-Type", "Authorization"]
+      }
+));
+
+app.use(express.json())
+app.use(cookieParser())
+
+app.use('/api/authemp',employeerouter);
+app.use('/api/attendence',attendencerouter);
+app.use('/api/admin',adminrouter)
 
 
-app.post("/login", (req, res) => {
-    const user = { id: 1, username: "testUser" };
-    const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.cookie("token", token, { httpOnly: true }).json({ message: "Logged in", token });
-});
+mongodb();
+const port=process.env.PORT ;
 
-
-const verifyToken = (req, res, next) => {
-    const token = req.cookies.token;
-    if (!token) return res.status(403).json({ message: "Unauthorized" });
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) return res.status(401).json({ message: "Invalid Token" });
-        req.user = decoded;
-        next();
-    });
-};
-
-
-app.get("/protected", verifyToken, (req, res) => {
-    res.json({ message: "This is a protected route", user: req.user });
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(port,()=>{
+    console.log(`Server is running in the Port ${port}`);
+})

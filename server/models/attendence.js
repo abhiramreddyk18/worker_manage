@@ -1,36 +1,41 @@
 import mongoose from 'mongoose';
 
-const attendanceSchema = new mongoose.Schema({
-    empId: {
-        type: String,
-        required: true
+const attendenceschema=mongoose.Schema({
+    empId:{
+        type:String,
+        require:true
     },
-    name: {
-        type: String,
-        required: true
+    name:{
+        type:String,
+        require:true
     },
-    InTime: {
-        type: Date
+    OutTime:{
+       
+        type: Date, 
     },
-    OutTime: {
-        type: Date
+    InTime:{
+        type: Date, 
+        default: Date.now
     },
-    hours: {
-        type: Number,
-        default: 0
+    hours:{
+        type:Number,
+        default:0
     },
-    payment: {
-        type: Number,
-        default: 0
+    payment:{
+        type:Number,
+        default:0
     },
-    status: {
-        type: String,
-        enum: ['in', 'out'],
-        required: true,
-        default: 'out'
+    out:{
+        type:Boolean,
+        default:true
+    },
+    active:{
+        type:Boolean,
+        default:true
     }
-});
 
-const AttendanceModel = mongoose.model('attendance', attendanceSchema);
+},{ timestamps: true })
 
-export default AttendanceModel;
+const attendencemodel=mongoose.model('attemdence',attendenceschema);
+
+export default attendencemodel
