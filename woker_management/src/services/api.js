@@ -30,3 +30,13 @@ export const requestLeave = async (employeeId, leaveData) => {
     return null;
   }
 };
+
+export const getAttendanceData = async (filters) => {
+  try {
+    const response = await axios.get(`${API_URL}/attendance`, { params: filters });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching attendance data", error);
+    return [];
+  }
+};
