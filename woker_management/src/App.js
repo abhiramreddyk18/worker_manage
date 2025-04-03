@@ -1,18 +1,42 @@
 
 import './App.css';
-
+import AttendanceHistory from './components/AttendanceHistory';
 import Dashboard from './components/Dashboard';
 import Login from './components/login';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Register from './components/Register';
+
+import { Link } from "react-router-dom";
+import SalarySlip from './components/SalarySlip';
+import LeaveRequest from './components/LeaveRequest';
+
+
+
 function App() {
   return (
-    <div className="App">
+    <>
+   
+    
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/dashboard" element={<Dashboard />} />
      
-      <Dashboard/>
-      <Login/>
-      <Register/>
-    </div>
+    </Routes>
+   
+  <nav>
+      <ul>
+        <li><Link to="/">Login</Link></li>
+        <li><Link to="/dashboard">Dashboard</Link></li>
+        <li><Link to="/map">Map</Link></li>
+      </ul>
+    </nav>
+  
+  </>
+    
+
+
+
+
   );
 }
 
