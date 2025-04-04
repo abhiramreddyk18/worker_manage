@@ -1,7 +1,7 @@
 import express from 'express'
-import { attenddetails, login, logout, otp_Send, register, resetpassword, userdetails} from '../controllers/authemployee.js'
-import userAuth from '../../yash/industry/server/middleware/userauth.js'
-import { validateLogin, validateSignup } from '../../yash/industry/server/middleware/validate.js'
+import { attenddetails, empleedetails, login, logout, otp_Send, register, resetpassword, userdetails} from '../controllers/authemployee.js'
+import userAuth from '../middleware/userauth.js'
+import { validateLogin, validateSignup } from '../middleware/validate.js'
 
 const employeerouter=express.Router()
 
@@ -12,6 +12,7 @@ employeerouter.post('/otpSend',otp_Send)
 employeerouter.post('/resetPassword',resetpassword)
 employeerouter.get('/userdetails',userAuth,  userdetails)
 employeerouter.get('/attenddetails',userAuth,attenddetails)
+employeerouter.get('/employeedetails',empleedetails)
 
 export default employeerouter;
 

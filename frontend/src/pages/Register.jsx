@@ -5,6 +5,7 @@ import aixos from 'axios'
 import axios from "axios";
 
 const Register = () => {
+  const Navigate=useNavigate()
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,7 +18,7 @@ const Register = () => {
     
     try {
       e.preventDefault();
-      axios.default.withCredentials=true;
+      axios.defaults.withCredentials=true;
 
       const user={
         name:name,
@@ -26,11 +27,14 @@ const Register = () => {
       }
 
       console.log(user);
-      const result=await axios.post('http://localhost:8080//api/authemp/register',
+      const result=await axios.post('http://localhost:8080/api/authemp/register',
         user,{withCredentials:true}
       )
       console.log(result.data);
 
+    setTimeout(()=>{
+      Navigate("/login")
+    },2000)
     } catch (error) {
       console.log("error in registration");
     }

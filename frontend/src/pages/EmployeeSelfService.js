@@ -1,37 +1,35 @@
 import React, { useEffect, useState } from "react";
-import AttendanceHistory from "../components/AttendanceHistory";
-import SalarySlip from "../components/SalarySlip";
-import LeaveRequest from "../components/LeaveRequest";
+import axios from "axios";
 import Eheader from "../components/Eheader";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress } from "@mui/material";
 
 const EmployeeSelfService = () => {
-  const employeeId = "EMP123"; // Example Employee ID (Replace with dynamic ID from auth)
+  const employeeId = "54409"; // Replace with dynamic employee ID from authentication
   const [employee, setEmployee] = useState(null);
-
-  const fakeEmployees = [
-    {
-      id: "EMP123",
-      name: "John Doe",
-      position: "Software Engineer",
-      totalHours: 160,
-      overtimeHours: 10,
-      attendance: [
-        { date: "2024-04-01", entryTime: "09:00 AM", exitTime: "06:00 PM", status: "On Time" },
-        { date: "2024-04-02", entryTime: "09:30 AM", exitTime: "06:15 PM", status: "Late" },
-        { date: "2024-04-03", entryTime: "08:50 AM", exitTime: "07:00 PM", status: "Overtime" },
-      ],
-      salary: {
-        month: "March 2024",
-        baseSalary: 5000,
-        overtimePay: 200,
-        totalSalary: 5200,
-      },
-    },
-  ];
+  const [attendance, setAttendance] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const data = fakeEmployees.find((emp) => emp.id === employeeId) || null;
-    setEmployee(data);
+    const fetchEmployeeData = async (e) => {
+      
+      try {
+         
+        axios.defaults.withCredentials = true;
+
+        
+        
+        const empResponse = await axios.get(`http://localhost:8080/api/authemp/userdetails`);
+        const attendanceResponse = await axios.get(`http://localhost:8080/api/authemp/attenddetails`);
+        setEmployee(empResponse.data);
+        setAttendance(attendanceResponse.data);
+      } catch (error) {
+        console.error("Error fetching employee data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEmployeeData();
   }, []);
 
   return (
@@ -39,35 +37,64 @@ const EmployeeSelfService = () => {
       <Eheader />
       <h2 style={titleStyle}>Employee Self-Service Portal</h2>
 
-      {employee ? (
+      {loading ? (
+        <CircularProgress />
+      ) : employee ? (
         <>
+          {/* Employee Details */}
           <div style={cardStyle}>
             <h3 style={subtitleStyle}>Welcome, {employee.name}</h3>
             <div style={infoGridStyle}>
-              <p><strong>Employee ID:</strong> {employee.id}</p>
-              <p><strong>Position:</strong> {employee.position}</p>
-              <p><strong>Total Hours Worked:</strong> {employee.totalHours}</p>
-              <p><strong>Overtime:</strong> {employee.overtimeHours} hours</p>
+              <p><strong>Employee ID:</strong> {employee.empId}</p>
+              <p><strong>Email:</strong> {employee.email}</p>
+              <p><strong>Role:</strong> {employee.role}</p>
+              <p><strong>Hourly Rate:</strong> ${employee.hourlyRate}</p>
+              <p><strong>Total Work Hours:</strong> {employee.totalWorkHours}</p>
+              <p><strong>Total Leaves:</strong> {employee.totalLeaves}</p>
+              <p><strong>Overtime Hours:</strong> {employee.overtimeHours}</p>
+              <p><strong>Active:</strong> {employee.isActive ? "Yes" : "No"}</p>
             </div>
           </div>
 
+          {/* Attendance Table */}
           <div style={pageCardStyle}>
             <h3 style={cardTitleStyle}>Attendance History</h3>
-            <AttendanceHistory attendance={employee.attendance} />
-          </div>
-
-          <div style={pageCardStyle}>
-            <h3 style={cardTitleStyle}>Salary Slip</h3>
-            <SalarySlip salaryData={employee.salary} />
-          </div>
-
-          <div style={pageCardStyle}>
-            <h3 style={cardTitleStyle}>Leave Request</h3>
-            <LeaveRequest employeeId={employeeId} />
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell><strong>Date</strong></TableCell>
+                    <TableCell><strong>In Time</strong></TableCell>
+                    <TableCell><strong>Out Time</strong></TableCell>
+                    <TableCell><strong>Hours Worked</strong></TableCell>
+                    <TableCell><strong>Payment</strong></TableCell>
+                    <TableCell><strong>Status</strong></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {attendance.length > 0 ? (
+                    attendance.map((record) => (
+                      <TableRow key={record._id}>
+                        <TableCell>{new Date(record.InTime).toLocaleDateString()}</TableCell>
+                        <TableCell>{new Date(record.InTime).toLocaleTimeString()}</TableCell>
+                        <TableCell>{record.OutTime ? new Date(record.OutTime).toLocaleTimeString() : "Still Working"}</TableCell>
+                        <TableCell>{record.hours.toFixed(2)}</TableCell>
+                        <TableCell>${record.payment.toFixed(2)}</TableCell>
+                        <TableCell>{record.out ? "Checked Out" : "Active"}</TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={6} style={{ textAlign: "center" }}>No attendance records found</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </div>
         </>
       ) : (
-        <p style={{ textAlign: "center", fontSize: "18px", color: "#666" }}>Loading employee details...</p>
+        <p style={{ textAlign: "center", fontSize: "18px", color: "#666" }}>Employee not found.</p>
       )}
     </div>
   );
@@ -79,32 +106,32 @@ const containerStyle = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  backgroundColor: "#ECEFF145",
+  backgroundColor: "#ECEFF1",
   padding: "20px",
   minHeight: "100vh",
-  marginTop:"100px"
+  marginTop: "100px",
 };
 
 const cardStyle = {
-  width: "90%", // Increased width
+  width: "90%",
   maxWidth: "1000px",
   backgroundColor: "#FFFFFF",
   padding: "20px",
   borderRadius: "12px",
   boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.2)",
   textAlign: "center",
-  marginBottom: "30px", // Space between cards
+  marginBottom: "30px",
 };
 
 const pageCardStyle = {
-  width: "90%", // Wider cards
-  maxWidth: "1200px", // Increased width for a page-like feel
+  width: "90%",
+  maxWidth: "1200px",
   backgroundColor: "#FFFFFF",
   padding: "25px",
   borderRadius: "12px",
   boxShadow: "0px 5px 20px rgba(0, 0, 0, 0.2)",
   textAlign: "center",
-  marginBottom: "40px", // More space between sections
+  marginBottom: "40px",
 };
 
 const titleStyle = {

@@ -1,13 +1,37 @@
 import React, { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
+import axios from 'axios'
 import rbg from "../assets/registerbg.jpg";
 const Alogin = () => {
+   const Navigate=useNavigate()
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log("User ID:", userId, "Password:", password);
+    
+    try {
+      e.preventDefault();
+      axios.default.withCredentials=true;
+
+      const user={
+        
+        empId:userId,
+        email:password
+      }
+
+      console.log(user);
+      const result=await axios.post('http://localhost:8080/api/admin/login',
+        user,{withCredentials:true}
+      )
+      console.log(result.data);
+
+    setTimeout(()=>{
+      Navigate("/admin")
+    },2000)
+    } catch (error) {
+      console.log("error in adminlogin");
+    }
   };
 
   return (
@@ -40,8 +64,8 @@ const Alogin = () => {
             <input
                 type="text"
                 placeholder="Enter User Id"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
                 required
                 style={{
                   width: "100%",
@@ -54,8 +78,8 @@ const Alogin = () => {
               />
               
               <input
-                type="password"
-                placeholder="Enter Password"
+                type="email"
+                placeholder="Enter email"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required

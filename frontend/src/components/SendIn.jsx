@@ -1,15 +1,33 @@
 import React, { useState } from "react";
 import { TextField, Button, Container, Box, Typography, Paper } from "@mui/material";
+import axios from 'axios'
+import { useNavigate } from "react-router-dom";
 
 const SendIn = ({ page, setPage }) => {
   const [userId, setUserId] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log("User ID:", userId);
+    
+    try {
+      e.preventDefault();
+      axios.default.withCredentials=true;
 
-    // Navigate to the scanner after login
-    setPage("scanner");
+      const user={
+        
+        empId:userId,
+      }
+
+      console.log(user);
+      const result=await axios.post('http://localhost:8080/api/attendence/incoming',
+        user,{withCredentials:true}
+      )
+      console.log(result.data);
+
+    
+    } catch (error) {
+      console.log("error in adminlogin");
+    }
   };
 
   return (

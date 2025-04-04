@@ -1,71 +1,109 @@
 import React, { useEffect, useState } from "react";
-import { getAttendanceData } from "../services/api";
-import AttendanceTable from "../components/AttendanceTable";
-import Filters from "../components/Filters";
-import Header from "./Header";
+import {
+  Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, Paper, Typography,
+  Container, TextField, Button, Box
+} from "@mui/material";
+import Header from "../pages/Header";
 
-// Attendance Tracking Component
-const AttendanceTracking = () => {
-  const [attendance, setAttendance] = useState([]);
-  const [filters, setFilters] = useState({ date: "", employeeId: "", department: "" });
-
-  // Fake Attendance Data
-  const fakeAttendanceData = [
-    { date: "2024-04-01", employeeId: "EMP123", name: "John Doe", department: "Engineering", status: "On Time" },
-    { date: "2024-04-01", employeeId: "EMP456", name: "Jane Smith", department: "HR", status: "Late" },
-    { date: "2024-04-02", employeeId: "EMP123", name: "John Doe", department: "Engineering", status: "Overtime" },
-    { date: "2024-04-02", employeeId: "EMP789", name: "Mike Johnson", department: "Finance", status: "Absent" },
-    { date: "2024-04-03", employeeId: "EMP456", name: "Jane Smith", department: "HR", status: "On Time" },
-    { date: "2024-04-03", employeeId: "EMP789", name: "Mike Johnson", department: "Finance", status: "On Time" },
-  ];
+const Dashboard = () => {
+  const [workers, setWorkers] = useState([]);
+  const [empIdFilter, setEmpIdFilter] = useState("");
+ 
 
   useEffect(() => {
-    // Filtering based on selected filters
-    const filteredData = fakeAttendanceData.filter((record) => {
-      return (
-        (!filters.date || record.date === filters.date) &&
-        (!filters.employeeId || record.employeeId.includes(filters.employeeId)) &&
-        (!filters.department || record.department.includes(filters.department))
-      );
-    });
+    
 
-    setAttendance(filteredData);
-  }, [filters]);
+    fetchWorkers(); // initially fetch all
+  }, []);
+
+  const fetchWorkers = async (filters = {}) => {
+    try {
+      let url = "http://localhost:8080/api/attendence/attendfilter";
+
+      const params = new URLSearchParams(filters);
+      if (params.toString()) {
+        url += "?" + params.toString();
+      }
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (Array.isArray(data)) {
+        setWorkers(data);
+      } else {
+        console.error("Expected an array but got:", data);
+      }
+    } catch (error) {
+      console.error("Error fetching workers:", error);
+    }
+  };
+
+  const handleSearch = () => {
+    const filters = {};
+    if (empIdFilter.trim()) filters.empId = empIdFilter.trim();
+   
+    fetchWorkers(filters);
+  };
+
+  const formatDate = (isoString) => {
+    return new Date(isoString).toLocaleString();
+  };
 
   return (
-    <div style={containerStyle}>
+    <Container maxWidth="lg" sx={{ mt: 5 }}>
       <Header />
-      <div style={paperStyle}>
-        <h2 style={headingStyle}>Attendance Tracking (Admin/HR)</h2>
-        <Filters setFilters={setFilters} />
-        <AttendanceTable attendance={attendance} />
-      </div>
-    </div>
+      <Typography variant="h4" align="center" gutterBottom sx={{ marginBottom: "40px" }}>
+        Worker Dashboard
+      </Typography>
+
+      {/* Filter Section */}
+      <Box display="flex" justifyContent="center" gap={2} mb={3}>
+        <TextField
+          label="Filter by Emp ID"
+          variant="outlined"
+          size="small"
+          value={empIdFilter}
+          onChange={(e) => setEmpIdFilter(e.target.value)}
+        />
+        
+        <Button variant="contained" onClick={handleSearch}>Search</Button>
+      </Box>
+
+      <TableContainer component={Paper} elevation={3}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: "#007bff" }}>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>ID</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Name</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Check-In Time</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Hours</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Payment</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Checked Out</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Active</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Created At</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Updated At</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {workers.map((worker, index) => (
+              <TableRow key={index} hover>
+                <TableCell>{worker.empId}</TableCell>
+                <TableCell>{worker.name}</TableCell>
+                <TableCell>{formatDate(worker.InTime)}</TableCell>
+                <TableCell>{worker.hours}</TableCell>
+                <TableCell>${worker.payment}</TableCell>
+                <TableCell>{worker.out ? "Yes" : "No"}</TableCell>
+                <TableCell>{worker.active ? "Yes" : "No"}</TableCell>
+                <TableCell>{formatDate(worker.createdAt)}</TableCell>
+                <TableCell>{formatDate(worker.updatedAt)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Container>
   );
 };
 
-// Inline Styles
-const containerStyle = {
-  width: "100%",
-  padding: "20px",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-};
-
-const paperStyle = {
-  width: "80%",
-  backgroundColor: "#fff",
-  padding: "20px",
-  marginTop: "120px",
-  boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-  borderRadius: "8px",
-  textAlign: "center",
-};
-
-const headingStyle = {
-  fontSize: "24px",
-  marginBottom: "20px",
-};
-
-export default AttendanceTracking;
+export default Dashboard;

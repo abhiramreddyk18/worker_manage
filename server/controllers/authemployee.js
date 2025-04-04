@@ -2,8 +2,8 @@ import express from 'express'
 import employeemodel from '../models/employee.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs';
-import transporter from '../../yash/industry/server/nodemail.js'
-import attendencemodel from '../../yash/industry/server/models/attendence.js';
+import transporter from '../nodemail.js'
+import attendencemodel from '../models/attendence.js';
 
 export const register=async(req,res)=>{
     const {name,email,password}=req.body;
@@ -59,17 +59,17 @@ export const register=async(req,res)=>{
 }
 
 export const login=async(req,res)=>{
-    const {email,password}=req.body;
-    if(!email || !password)
+    const {empId,password}=req.body;
+    if(!empId || !password)
     {
         return res.status(505).send({message:"Data missing"});
     }
     try {
         
-        const user=await employeemodel.findOne({email});
+        const user=await employeemodel.findOne({empId});
         if(!user)
         {
-            return res.status(400).send({message:"email not exist"});
+            return res.status(400).send({message:"user not exist"});
         }
 
         const check=await bcrypt.compare(password,user.password);
@@ -216,4 +216,19 @@ export const attenddetails=async(req,res)=>{
     }
 }
 
+export const empleedetails=async(req,res)=>{
+    try {
+        const user=await employeemodel.find();
+        
+        
+        if(user.length===0)
+        {
+            return res.status(201).send({message:"employees are no there",});
+        }
+        return res.status(201).send(user);
+
+    } catch (error) {
+        return res.status(400).send({message:"error occur in employee details"})
+    }
+}
 

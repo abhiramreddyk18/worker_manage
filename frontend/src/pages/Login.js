@@ -1,13 +1,39 @@
 import React, { useState } from "react";
 import rbg from "../assets/registerbg.jpg";
+import axios from 'axios'
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
 
 const Login = () => {
+  const Navigate=useNavigate()
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     console.log("User ID:", userId, "Password:", password);
+    try {
+      e.preventDefault();
+      axios.default.withCredentials=true;
+
+      const user={
+        
+        empId:userId,
+        password:password
+      }
+
+      console.log(user);
+      const result=await axios.post('http://localhost:8080/api/authemp/login',
+        user,{withCredentials:true}
+      )
+      console.log(result.data);
+
+    setTimeout(()=>{
+      Navigate("/employee")
+    },2000)
+    } catch (error) {
+      console.log("error in registration");
+    }
   };
 
   return (
@@ -23,6 +49,7 @@ const Login = () => {
         backgroundPosition: "center",
         backgroundBlendMode: "darken",
         backgroundColor: "rgba(10, 10, 10, 0.85)",
+        flexDirection:"column"
       }}
     >
       <div
@@ -71,8 +98,14 @@ const Login = () => {
           >
             Submit
           </button>
+          
         </form>
+      
       </div>
+      <Link style={{ padding: "15px 30px", backgroundColor: "#007bff", color: "white", textDecoration: "none", borderRadius: "5px", fontWeight: "bold",marginTop:"40px" }} to="/register">
+  SignUp
+</Link>
+
     </div>
   );
 };

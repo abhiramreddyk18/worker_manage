@@ -1,6 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import mongodb from '../yash/industry/server/db.js'
+import mongodb from './db.js'
 import cors from 'cors';
 
 import employeerouter from './routers/employeerouter.js'
